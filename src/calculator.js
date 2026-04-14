@@ -8,9 +8,14 @@
  * - Subtraction (-): Subtract one number from another
  * - Multiplication (*): Multiply two or more numbers
  * - Division (/): Divide one number by another
+ * - Modulo (%): Calculate the remainder of division
+ * - Exponentiation (^): Raise a number to the power of another
+ * - Square Root (sqrt): Calculate the square root of a number
  * 
  * Usage: node calculator.js <operation> <number1> <number2> [number3...]
  * Example: node calculator.js + 5 3
+ * Example: node calculator.js ^ 2 8
+ * Example: node calculator.js sqrt 16
  */
 
 /**
@@ -49,6 +54,33 @@ function divide(...numbers) {
 }
 
 /**
+ * Modulo: Calculate the remainder of a divided by b
+ */
+function modulo(a, b) {
+  if (b === 0) {
+    throw new Error('Modulo by zero is not allowed');
+  }
+  return a % b;
+}
+
+/**
+ * Power: Raise base to the exponent
+ */
+function power(base, exponent) {
+  return Math.pow(base, exponent);
+}
+
+/**
+ * Square Root: Calculate the square root of n
+ */
+function squareRoot(n) {
+  if (n < 0) {
+    throw new Error('Cannot calculate square root of a negative number');
+  }
+  return Math.sqrt(n);
+}
+
+/**
  * Calculate result based on operation and numbers
  */
 function calculate(operation, ...numbers) {
@@ -61,22 +93,41 @@ function calculate(operation, ...numbers) {
       return multiply(...numbers);
     case '/':
       return divide(...numbers);
+    case '%':
+      if (numbers.length !== 2) {
+        throw new Error('Modulo operation requires exactly 2 numbers');
+      }
+      return modulo(numbers[0], numbers[1]);
+    case '^':
+      if (numbers.length !== 2) {
+        throw new Error('Power operation requires exactly 2 numbers');
+      }
+      return power(numbers[0], numbers[1]);
+    case 'sqrt':
+      if (numbers.length !== 1) {
+        throw new Error('Square root operation requires exactly 1 number');
+      }
+      return squareRoot(numbers[0]);
     default:
       throw new Error(`Unknown operation '${operation}'`);
   }
 }
 
 // Export functions for testing
-module.exports = { add, subtract, multiply, divide, calculate };
+module.exports = { add, subtract, multiply, divide, modulo, power, squareRoot, calculate };
 
 // CLI interface (only runs when executed directly)
 if (require.main === module) {
   const args = process.argv.slice(2);
 
-  if (args.length < 3) {
-    console.log('Usage: node calculator.js <operation> <number1> <number2> [number3...]');
-    console.log('Operations: +, -, *, /');
-    console.log('Example: node calculator.js + 5 3');
+  if (args.length < 2) {
+    console.log('Usage: node calculator.js <operation> <number1> [number2] [number3...]');
+    console.log('Operations: +, -, *, /, %, ^, sqrt');
+    console.log('Examples:');
+    console.log('  node calculator.js + 5 3');
+    console.log('  node calculator.js % 10 3');
+    console.log('  node calculator.js ^ 2 8');
+    console.log('  node calculator.js sqrt 16');
     process.exit(1);
   }
 
@@ -95,7 +146,7 @@ if (require.main === module) {
   } catch (error) {
     console.error(`Error: ${error.message}`);
     if (error.message.includes('Unknown operation')) {
-      console.log('Supported operations: +, -, *, /');
+      console.log('Supported operations: +, -, *, /, %, ^, sqrt');
     }
     process.exit(1);
   }
